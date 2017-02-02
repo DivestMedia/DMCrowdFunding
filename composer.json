@@ -1,0 +1,6 @@
+{
+    "require-dev": {
+        "intervention/image": "dev-master"
+    },
+    "minimum-stability": "dev"
+}

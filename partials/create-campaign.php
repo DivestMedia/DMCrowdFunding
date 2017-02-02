@@ -21,7 +21,7 @@
         <div class="col-sm-4">
             <h4>Preview</h4>
             <figure class="">
-                <img class="img-responsive" src="http://lorempixel.com/640/320/cats/"/>
+                <img class="img-responsive" :src="profilePhoto"/>
                 <div class="progress progress-xs">
                     <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%; min-width: 2em;">
                         <span class="sr-only">60% Complete</span>
@@ -87,7 +87,7 @@
 
         <div class="col-sm-8">
             <div class="tab-content margin-top-60">
-                <div role="tabpanel" class="tab-pane active" id="step1">
+                <div role="tabpanel" class="tab-pane" id="step1">
 
                     <h4>Campaign Title</h4>
                     <div class="fancy-form">
@@ -214,13 +214,24 @@
                     <br>
 
                 </div>
-                <div role="tabpanel" class="tab-pane" id="step2">
+                <div role="tabpanel" class="tab-pane active" id="step2">
                     <h4>Profile Photo</h4>
-                    <div class="thumbnail" style="width:168px;height:168px;">
-                        <img src="http://lorempixel.com/168/168/cats/" class="img-responsive"/>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="thumbnail">
+                                <img :src="profilePhoto" class="img-responsive"/>
+                            </div>
+                        </div>
+                        <div class="col-sm-8">
+                            <form id="profile-photo-uploader" action="<?=admin_url('admin-ajax.php')?>?action=uploadCampaignProfilePhoto" class="dropzone no-image nomargin" enctype="multipart/form-data">
+                                <div class="fallback">
+                                    <input name="photo" type="file" />
+                                </div>
+                            </form>
+                            <small class="text-muted block">646 x 220 | Max file size: 10Mb (zip/pdf/jpg/png)</small>
+                        </div>
                     </div>
-                    <input class="custom-file-upload" type="file" id="file" name="contact[attachment]" id="contact:attachment" data-btn-text="Select a File" />
-                    <small class="text-muted block">168 x 168 | Max file size: 10Mb (zip/pdf/jpg/png)</small>
+
                     <hr />
                     <h4>Cover Photo</h4>
                     <div class="thumbnail">
@@ -250,5 +261,5 @@
     </div>
 </div>
 <script>
-    var assets_path = "<?=DM_CROWD_PLUGIN_URL?>";
+var assets_path = "<?=DM_CROWD_PLUGIN_URL?>";
 </script>

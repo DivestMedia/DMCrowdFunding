@@ -15,6 +15,7 @@ var app = new Vue({
             currency: 'USD',
             location : 'USA',
         },
+        profilePhoto : 'http://lorempixel.com/640/320/cats/',
         countries: {},
         currencies: {},
         daysToGo : 0
@@ -64,7 +65,6 @@ var app = new Vue({
             }
 
             arr.sort(function(a, b) { return a[key].toLowerCase().localeCompare(b[key].toLowerCase()); }); //use this to sort as strings
-            console.log(arr);
             return arr; // returns array
         }
     },
@@ -76,6 +76,9 @@ var app = new Vue({
         Events.$on('endDateChanged',function(value){
             self.updateCampaignEndDate();
             self.campaign.endDate = value;
+        });
+        Events.$on('profilePhotoUploaded',function(url){
+            self.profilePhoto = url;
         });
 
         this.fetchCountryList();
@@ -102,4 +105,28 @@ $(function () {
         Events.$emit('endDateChanged',$(this).find('input').first().val());
 
     });
+
+    Dropzone.options.profilePhotoUploader = {
+        paramName: "image", // The name that will be used to transfer the file
+        maxFilesize: 2, // MB
+        filesizeBase: 1024,
+        addRemoveLinks: true,
+        accept: function(file, done) {
+            // console.log(file,done);
+            done();
+        },
+        init: function() {
+            this.on("addedfile", function(file) {
+                console.log("Added file.",file);
+            });
+            this.on("uploadprogress", function(file,progress,bytesSent) {
+                console.log(file,progress,bytesSent);
+            });
+            this.on("success", function(file,response) {
+                var response = JSON.parse(response);
+                Events.$emit('profilePhotoUploaded',response.url);
+                this.removeAllFiles(true);
+            });
+        }
+    };
 });

@@ -1,0 +1,35 @@
+// out: crowdfunding.css, sourcemap: true, compress: true
+.dropzone{
+    border: 2px dashed #ddd;
+    padding: 3rem;
+    text-align: center;
+    display: block;
+    position: relative;
+    &.dz-drag-hover{
+        border-color: #333;
+    }
+
+    &.dz-started{
+        .dz-default.dz-message{
+            display: none;
+        }
+    }
+
+    .dz-image{
+        border: 1px solid #ddd;
+        padding: 3px;
+        display: block;
+    }
+
+    .dz-preview{
+        .dz-success-mark,.dz-error-mark{
+            display: none;
+        }
+
+    }
+    &.no-image{
+        .dz-image{
+            display: none;   
+        }
+    }
+}
