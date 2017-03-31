@@ -14,11 +14,21 @@ var app = new Vue({
             goal : 100000,
             currency: 'USD',
             location : 'USA',
+            video : '',
+            videoID : '',
+            overview : '',
+            description : '',
+            profilePhoto : 'https://placeholdit.imgix.net/~text?txtsize=78&txt=Profile%20Photo&w=640&h=320',
+            coverPhoto : 'https://placeholdit.imgix.net/~text?txtsize=78&txt=Cover%20Photo&w=828&h=315',
         },
-        profilePhoto : 'http://lorempixel.com/640/320/cats/',
+        messages: {
+            video : 'Youtube, Vimeo'
+        },
+
         countries: {},
         currencies: {},
-        daysToGo : 0
+        daysToGo : 0,
+        videoStatus : false
     },
     computed: {
 
@@ -35,6 +45,13 @@ var app = new Vue({
             i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(c))),
             j = (j = i.length) > 3 ? j % 3 : 0;
             return (x + "") + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+        }
+    },
+    computed: {
+        youtubeUrl(){
+            if(!this.videoStatus) return false;
+
+            return 'https://www.youtube.com/embed/' + this.campaign.videoID + '?autoplay=0';
         }
     },
     methods: {
@@ -66,19 +83,51 @@ var app = new Vue({
 
             arr.sort(function(a, b) { return a[key].toLowerCase().localeCompare(b[key].toLowerCase()); }); //use this to sort as strings
             return arr; // returns array
+        },
+        validateYouTubeUrl() {
+            url  = this.campaign.video;
+
+            if (url != undefined || url != '') {
+                var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/;
+                var match = url.match(regExp);
+                if (match && match[2].length == 11) {
+                    // Do anything for being valid
+                    // if need to change the url to embed url then use below line
+                    // return match[2];
+                    this.videoStatus = true;
+                    this.campaign.videoID = match[2];
+                    return this.messages.video = 'YAY!';
+                    // $('#ytplayerSide').attr('src', 'https://www.youtube.com/embed/' + match[2] + '?autoplay=0');
+                }
+            }
+
+            this.videoStatus = false;
+            this.videoID = false;
+            return this.messages.video = 'Invalid URL';
         }
     },
     created : function(){
         var self = this;
+
         Events.$on('startDateChanged',function(value){
             self.campaign.startDate = value;
         });
+
         Events.$on('endDateChanged',function(value){
             self.updateCampaignEndDate();
             self.campaign.endDate = value;
         });
-        Events.$on('profilePhotoUploaded',function(url){
-            self.profilePhoto = url;
+
+        Events.$on('profilePhotoUploaded',function(data){
+            switch (data.type) {
+                case 'profile':
+                self.campaign.profilePhoto = data.url;
+                break;
+                case 'profile':
+                default:
+                self.campaign.coverPhoto = data.url;
+                break;
+            }
         });
 
         this.fetchCountryList();
@@ -124,7 +173,7 @@ $(function () {
             });
             this.on("success", function(file,response) {
                 var response = JSON.parse(response);
-                Events.$emit('profilePhotoUploaded',response.url);
+                Events.$emit('profilePhotoUploaded',response);
                 this.removeAllFiles(true);
             });
         }

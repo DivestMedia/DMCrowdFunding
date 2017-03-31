@@ -21,7 +21,7 @@
         <div class="col-sm-4">
             <h4>Preview</h4>
             <figure class="">
-                <img class="img-responsive" :src="profilePhoto"/>
+                <img class="img-responsive" :src="campaign.profilePhoto"/>
                 <div class="progress progress-xs">
                     <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%; min-width: 2em;">
                         <span class="sr-only">60% Complete</span>
@@ -30,7 +30,7 @@
             </figure>
             <div class="row">
                 <div class="col-sm-5">
-                    <strong>{{ campaign.goal | currency( '$' , 2) }}</strong><br>
+                    <strong v-if="currencies[campaign.currency]">{{ campaign.goal | currency( currencies[campaign.currency].symbol , 2) }}</strong><br>
                     <span>funding goal</span>
                 </div>
                 <div class="col-sm-3">
@@ -80,14 +80,14 @@
                 </small>
             </p>
             <p>
-                A colorful illustrated guide to the mythical creatures from Celtic myth, believed to inhabit the dramatic landscapes of Wales
+                {{ campaign.overview }}
             </p>
         </div>
 
 
         <div class="col-sm-8">
             <div class="tab-content margin-top-60">
-                <div role="tabpanel" class="tab-pane" id="step1">
+                <div role="tabpanel" class="tab-pane active" id="step1">
 
                     <h4>Campaign Title</h4>
                     <div class="fancy-form">
@@ -214,39 +214,78 @@
                     <br>
 
                 </div>
-                <div role="tabpanel" class="tab-pane active" id="step2">
+                <div role="tabpanel" class="tab-pane " id="step2">
+
+                    <h4>Overview</h4>
+                    <div class="fancy-form">
+                        <textarea rows="5" class="form-control word-count" data-maxlength="50" data-info="textarea-words-info" placeholder="Say something to summarize your project.." v-model="campaign.overview"></textarea>
+
+                        <i class="fa fa-comments"><!-- icon --></i>
+
+                        <span class="fancy-hint size-11 text-muted">
+                            <strong>Hint:</strong> 50 words allowed!
+                            <span class="pull-right">
+                                <span id="textarea-words-info">0/50</span> Words
+                            </span>
+                        </span>
+
+                    </div>
+                    <h4>Story</h4>
+                    <textarea class="summernote form-control" data-height="400" data-lang="en-US" v-model="campaign.description">asdfasd</textarea>
+
                     <h4>Profile Photo</h4>
                     <div class="row">
-                        <div class="col-sm-4">
+                        <div class="col-sm-8">
                             <div class="thumbnail">
-                                <img :src="profilePhoto" class="img-responsive"/>
+                                <img :src="campaign.profilePhoto" class="img-responsive"/>
                             </div>
                         </div>
-                        <div class="col-sm-8">
+                        <div class="col-sm-4">
                             <form id="profile-photo-uploader" action="<?=admin_url('admin-ajax.php')?>?action=uploadCampaignProfilePhoto" class="dropzone no-image nomargin" enctype="multipart/form-data">
                                 <div class="fallback">
                                     <input name="photo" type="file" />
                                 </div>
                             </form>
-                            <small class="text-muted block">646 x 220 | Max file size: 10Mb (zip/pdf/jpg/png)</small>
+                            <small class="text-muted block">646 x 220 | Max file size: 10Mb (jpg/png/gif)</small>
                         </div>
                     </div>
 
                     <hr />
                     <h4>Cover Photo</h4>
-                    <div class="thumbnail">
-                        <img src="http://lorempixel.com/828/315/cats/" class="img-responsive"/>
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <div class="thumbnail">
+                                <img :src="campaign.coverPhoto" class="img-responsive"/>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <form id="profile-photo-uploader" action="<?=admin_url('admin-ajax.php')?>?action=uploadCampaignCoverPhoto" class="dropzone no-image nomargin" enctype="multipart/form-data">
+                                <div class="fallback">
+                                    <input name="photo" type="file" />
+                                </div>
+                            </form>
+                            <small class="text-muted block">828 x 315 | Max file size: 10Mb (jpg/png/gif)</small>
+                        </div>
                     </div>
-                    <input class="custom-file-upload" type="file" id="file" name="contact[attachment]" id="contact:attachment" data-btn-text="Select a File" />
-                    <small class="text-muted block">828 x 315 | Max file size: 10Mb (zip/pdf/jpg/png)</small>
+
                     <hr />
-                    <h4>Campaign Video</h4>
-                    <div class="thumbnail" style="width:168px;height:168px;">
-                        <img src="http://lorempixel.com/168/168/cats/" class="img-responsive"/>
+                    <h4>Promotional Video</h4>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <template v-if="videoStatus">
+                                <div class="embed-responsive embed-responsive-16by9">
+                                    <iframe class="embed-responsive-item" width="560" height="315" :src="youtubeUrl"></iframe>
+                                </div><br>
+                            </template>
+                            <div class="fancy-form">
+                                <i class="fa fa-link"></i>
+                                <input type="text" class="form-control" placeholder="e.g. Youtube or Vimeo URL" v-model="campaign.video" @change="validateYouTubeUrl">
+                                <span class="fancy-tooltip top-right">
+                                    <em>{{ messages.video }}</em>
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                    <input class="custom-file-upload" type="file" id="file" name="contact[attachment]" id="contact:attachment" data-btn-text="Select a File" />
-                    <small class="text-muted block">168 x 168 | Max file size: 10Mb (zip/pdf/jpg/png)</small>
-                    <hr />
                 </div>
                 <div role="tabpanel" class="tab-pane" id="step3">
                     <h4>Rewards</h4>
